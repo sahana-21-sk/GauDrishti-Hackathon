@@ -1,0 +1,298 @@
+{
+  "meta": {
+    "schema_version": 1,
+    "video_name": "10882088-hd_1920_1080_15fps.mp4",
+    "fps": 15.313,
+    "duration_s": 16,
+    "width": 1920,
+    "height": 1080,
+    "baseline_until_s": 6,
+    "video_start_clock": "06:00",
+    "processed_video": "processed_video.mp4"
+  },
+  "cows": [
+    {
+      "id": 1,
+      "stats": {
+        "baseline": {
+          "speed": 0.1,
+          "lying_pct": 0.0,
+          "feeding_pct": 1.0
+        },
+        "recent": {
+          "speed": 0.138,
+          "lying_pct": 0.0,
+          "feeding_pct": 0.8
+        },
+        "isolation_score": 0.0,
+        "mount_events": 0,
+        "heat_score": 0.328,
+        "health_score": 0.1
+      },
+      "timeline": [
+        {
+          "t": 0,
+          "state": "feeding",
+          "speed": 0.067,
+          "x": 0.5232,
+          "y": 0.4983
+        },
+        {
+          "t": 1,
+          "state": "feeding",
+          "speed": 0.084,
+          "x": 0.5343,
+          "y": 0.4899
+        },
+        {
+          "t": 2,
+          "state": "feeding",
+          "speed": 0.106,
+          "x": 0.5197,
+          "y": 0.4592
+        },
+        {
+          "t": 3,
+          "state": "feeding",
+          "speed": 0.078,
+          "x": 0.5224,
+          "y": 0.4521
+        },
+        {
+          "t": 4,
+          "state": "feeding",
+          "speed": 0.157,
+          "x": 0.5337,
+          "y": 0.4631
+        },
+        {
+          "t": 5,
+          "state": "feeding",
+          "speed": 0.108,
+          "x": 0.5285,
+          "y": 0.4805
+        },
+        {
+          "t": 6,
+          "state": "feeding",
+          "speed": 0.072,
+          "x": 0.5204,
+          "y": 0.4847
+        },
+        {
+          "t": 7,
+          "state": "feeding",
+          "speed": 0.085,
+          "x": 0.5436,
+          "y": 0.4859
+        },
+        {
+          "t": 8,
+          "state": "feeding",
+          "speed": 0.017,
+          "x": 0.5428,
+          "y": 0.4831
+        },
+        {
+          "t": 9,
+          "state": "feeding",
+          "speed": 0.048,
+          "x": 0.5474,
+          "y": 0.4894
+        },
+        {
+          "t": 10,
+          "state": "feeding",
+          "speed": 0.076,
+          "x": 0.5481,
+          "y": 0.462
+        },
+        {
+          "t": 11,
+          "state": "feeding",
+          "speed": 0.036,
+          "x": 0.5479,
+          "y": 0.4776
+        },
+        {
+          "t": 12,
+          "state": "feeding",
+          "speed": 0.053,
+          "x": 0.5445,
+          "y": 0.4901
+        },
+        {
+          "t": 13,
+          "state": "feeding",
+          "speed": 0.213,
+          "x": 0.5681,
+          "y": 0.4971
+        },
+        {
+          "t": 14,
+          "state": "walking",
+          "speed": 0.729,
+          "x": 0.5776,
+          "y": 0.4189
+        },
+        {
+          "t": 15,
+          "state": "standing",
+          "speed": 0.054,
+          "x": 0.5778,
+          "y": 0.4237
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "stats": {
+        "baseline": {
+          "speed": 0.066,
+          "lying_pct": 0.0,
+          "feeding_pct": 0.667
+        },
+        "recent": {
+          "speed": 0.054,
+          "lying_pct": 0.0,
+          "feeding_pct": 0.2
+        },
+        "isolation_score": 0.0,
+        "mount_events": 0,
+        "heat_score": 0.2,
+        "health_score": 0.386
+      },
+      "timeline": [
+        {
+          "t": 0,
+          "state": "feeding",
+          "speed": 0.097,
+          "x": 0.3553,
+          "y": 0.4834
+        },
+        {
+          "t": 1,
+          "state": "feeding",
+          "speed": 0.036,
+          "x": 0.3671,
+          "y": 0.4716
+        },
+        {
+          "t": 2,
+          "state": "feeding",
+          "speed": 0.081,
+          "x": 0.3655,
+          "y": 0.4667
+        },
+        {
+          "t": 3,
+          "state": "feeding",
+          "speed": 0.074,
+          "x": 0.3621,
+          "y": 0.4661
+        },
+        {
+          "t": 4,
+          "state": "standing",
+          "speed": 0.086,
+          "x": 0.3535,
+          "y": 0.4392
+        },
+        {
+          "t": 5,
+          "state": "standing",
+          "speed": 0.019,
+          "x": 0.3495,
+          "y": 0.4302
+        },
+        {
+          "t": 6,
+          "state": "standing",
+          "speed": 0.033,
+          "x": 0.349,
+          "y": 0.418
+        },
+        {
+          "t": 7,
+          "state": "standing",
+          "speed": 0.054,
+          "x": 0.3455,
+          "y": 0.4393
+        },
+        {
+          "t": 8,
+          "state": "standing",
+          "speed": 0.033,
+          "x": 0.3366,
+          "y": 0.438
+        },
+        {
+          "t": 9,
+          "state": "standing",
+          "speed": 0.008,
+          "x": 0.3438,
+          "y": 0.4312
+        },
+        {
+          "t": 10,
+          "state": "standing",
+          "speed": 0.009,
+          "x": 0.3456,
+          "y": 0.4307
+        },
+        {
+          "t": 11,
+          "state": "standing",
+          "speed": 0.038,
+          "x": 0.3396,
+          "y": 0.4277
+        },
+        {
+          "t": 12,
+          "state": "feeding",
+          "speed": 0.116,
+          "x": 0.3389,
+          "y": 0.4397
+        },
+        {
+          "t": 13,
+          "state": "standing",
+          "speed": 0.16,
+          "x": 0.3506,
+          "y": 0.4353
+        },
+        {
+          "t": 14,
+          "state": "feeding",
+          "speed": 0.043,
+          "x": 0.3496,
+          "y": 0.4512
+        },
+        {
+          "t": 15,
+          "state": "standing",
+          "speed": 0.047,
+          "x": 0.3559,
+          "y": 0.4318
+        }
+      ]
+    }
+  ],
+  "events": [],
+  "watchlist": [
+    {
+      "cow_id": 2,
+      "score": 0.39,
+      "t": 6.0,
+      "reasons": [
+        "Movement 18% lower than her baseline",
+        "Feeding time down 70% vs her baseline"
+      ],
+      "id": "W1",
+      "clip": "clips/watch_cow2_6.mp4",
+      "clip_start": 3.0,
+      "clip_dur": 8.0
+    }
+  ],
+  "alerts": []
+}
