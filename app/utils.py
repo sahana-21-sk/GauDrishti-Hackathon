@@ -243,23 +243,86 @@ def _gemini(prompt):
     except Exception:
         return None
 
-
 def explain(item, lang, window):
-    """Returns (text, source) where source is 'gemini' or 'template'. Cached per item + language."""
-    cache = st.session_state.setdefault("expl", {})
-    k = (item["id"], item["cow_id"], round(item["score"], 2), lang, window)
-    if k not in cache:
-        kind = "watchlist (mild drift, no action needed yet)" if item.get("kind") == "watch" else item.get("type", "alert")
-        prompt = ("You help small dairy farmers in India. A camera system flagged a cow using these signals "
-                  f"(a screening, not a diagnosis):\nType: {kind}\nCow: #{item['cow_id']}\n"
-                  f"Confidence: {int(item['score'] * 100)}%\nReasons: {'; '.join(item.get('reasons', []))}\n"
-                  f"Best breeding window (heat only): {window}\n\n"
-                  f"Write in {LANG_NAME[lang]}: (1) two short, simple sentences for the farmer saying what was "
-                  "seen and what to do (use the word 'possible', never claim a diagnosis); then (2) one line "
-                  "starting with 'Vet note:' (in English) for the vet. Plain text, no markdown.")
-        t = _gemini(prompt)
-        cache[k] = (t, "gemini") if t else (_fallback(item, lang, window), "template")
-    return cache[k]
+    
+    try:
+        cache = st.session_state.setdefault("expl", {})
+
+        key = (
+            item.get("id"),
+            item.get("cow_id"),
+            round(float(item.get("score", 0)), 2),
+            lang,
+            window,
+        )
+
+        if key not in cache:
+            kind = (
+                "watchlist (mild drift, no action needed yet)"
+                if item.get("kind") == "watch"
+                else item.get("type", "alert")
+            )
+
+            prompt = (
+                "You help small dairy farmers in India. "
+                "A camera system flagged a cow using these signals "
+                "(this is a screening aid, not a diagnosis).\n"
+                f"Type: {kind}\n"
+                f"Cow: #{item.get('cow_id')}\n"
+                f"Confidence: {int(float(item.get('score', 0)) * 100)}%\n"
+                f"Reasons: {'; '.join(item.get('reasons', []))}\n"
+                f"Best breeding window (heat only): {window}\n\n"
+                f"Write in {LANG_NAME.get(lang, 'English')}: "
+                "(1) two short, simple sentences for the farmer saying "
+                "what was seen and what to do (use the word 'possible', "
+                "never claim a diagnosis); then (2) one line starting "
+                "with 'Vet note:' (in English) for the vet. "
+                "Plain text, no markdown."
+            )
+
+            text = _gemini(prompt)
+
+            if text:
+                cache[key] = (text, "gemini")
+            else:
+                cache[key] = (_fallback(item, lang, window), "template")
+
+        return cache[key]
+
+    except Exception:
+        return _fallback(item, lang, window), "template"
+
+def translated_reasons(item, lang):
+    """Translate alert/watchlist reasons for display without changing backend results."""
+    reasons = item.get("reasons", [])
+
+    if lang == "en":
+        return reasons
+
+    translations = {
+        "hi": {
+            "Movement 18% lower": "गतिशीलता 18% कम है",
+            "Feeding time down 70%": "खाने का समय 70% कम है",
+            "Lying time increased": "लेटने का समय बढ़ गया है",
+            "Lying time decreased": "लेटने का समय कम हो गया है",
+            "Isolation increased": "झुंड से अलग रहने का समय बढ़ गया है",
+            "Repeated mounting": "बार-बार माउंटिंग व्यवहार देखा गया है",
+            "Possible heat": "गर्मी (हीट) के संभावित संकेत दिखाई दिए हैं",
+        },
+        "te": {
+            "Movement 18% lower": "కదలిక 18% తగ్గింది",
+            "Feeding time down 70%": "తినే సమయం 70% తగ్గింది",
+            "Lying time increased": "పడుకునే సమయం పెరిగింది",
+            "Lying time decreased": "పడుకునే సమయం తగ్గింది",
+            "Isolation increased": "మంద నుండి ఒంటరిగా ఉండే సమయం పెరిగింది",
+            "Repeated mounting": "పునరావృత మౌంటింగ్ ప్రవర్తన కనిపించింది",
+            "Possible heat": "వేడి (హీట్) యొక్క సంభావ్య లక్షణాలు కనిపించాయి",
+        },
+    }
+
+    table = translations.get(lang, {})
+
+    return [table.get(reason, reason) for reason in reasons]
 
 
 def speak(text, lang, item_id, allow_pregen):

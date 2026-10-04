@@ -185,7 +185,14 @@ def item_card(x, uid, full=True):
     st.markdown(f'<div class="item {kind}"><h3>Cow #{x["cow_id"]}</h3>{pill(tag[0], tag[1])}{pill(kind_text(x), "blue")}'
                 f'{pill(str(int(x["score"] * 100)) + "% deviation", "grey")}</div>', unsafe_allow_html=True)
     st.progress(min(max(float(x["score"]), 0.0), 1.0))
-    st.markdown('<ul class="why">' + "".join(f"<li>{html.escape(r)}</li>" for r in x["reasons"]) + "</ul>", unsafe_allow_html=True)
+    display_reasons = U.translated_reasons(x, lang)
+    display_reasons = U.translated_reasons(x, lang)
+    st.markdown(
+        '<ul class="why">' +
+        "".join(f"<li>{html.escape(r)}</li>" for r in display_reasons) +
+        "</ul>",
+        unsafe_allow_html=True
+    )
     if not full:
         return
     if x.get("type") == "heat":
@@ -490,18 +497,6 @@ def analyze():
     st.markdown('<div class="flow">' + '<span class="a">→</span>'.join(f'<span class="n">{t}</span>' for t in (
         "Video", "YOLO", "ByteTrack", "Behaviour", "Own baseline", "Watchlist / alerts", "Evidence", "Gemini", "Voice")) + "</div>", unsafe_allow_html=True)
     live_ok = U.engine_available()
-    opts = ["Upload a video (AI runs here)", "Load Colab results (output.zip)"]
-    way = st.radio("How do you want to add data?", opts, horizontal=True, index=0 if live_ok else 1, key="way")
-    if way == opts[1]:
-        z = st.file_uploader("output.zip from the Colab notebook", type=["zip"], key="zipup")
-        if z and st.button("Load results", type="primary", key="loadzip"):
-            try:
-                st.session_state["analysis"] = U.load_zip_results(z.getvalue())
-                st.session_state["_goto_mine"] = True
-                st.rerun()
-            except Exception as e:
-                st.error(f"Could not load this zip: {e}")
-        return
     if not live_ok:
         st.warning("The live AI engine (YOLO) is not installed in this deployment, so video processing is off here. "
                    "Run the app on your laptop (`pip install -r requirements-local.txt`) or process in Colab and use 'Load Colab results'.")
