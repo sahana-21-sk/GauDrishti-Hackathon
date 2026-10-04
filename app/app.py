@@ -41,7 +41,7 @@ section[data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked)
 .watch-hero{background:linear-gradient(120deg,#B45309,#F59E0B 60%,#FCD34D)}
 .kpi{background:#fff;border:2px solid #DDEBE1;border-radius:18px;padding:16px 20px;box-shadow:0 4px 14px rgba(15,81,50,.08);height:100%}
 .kpi .l{font-size:.85rem;font-weight:800;color:#4B5F55;text-transform:uppercase;letter-spacing:.07em}
-.kpi .v{font-size:3rem;font-weight:800;line-height:1.1;color:#0F5132}
+.kpi .v{font-size:2.5rem;word-break:keep-all;white-space:nowrap;font-weight:800;line-height:1.1;color:#0F5132}
 .kpi .s{font-size:.95rem;color:#5B6B63}
 .kpi.red .v{color:#DC2626}.kpi.amber .v{color:#D97706}
 .pill{display:inline-block;padding:4px 14px;border-radius:999px;font-size:.9rem;font-weight:800;margin:0 8px 6px 0}
@@ -81,9 +81,9 @@ def kpi(label, value, sub="", tone=""):
 
 def style(fig, title, h=400):
     fig.update_layout(title=dict(text=title, font=dict(size=22, color="#0F3D2A"), x=0.0, xanchor="left"),
-                      font=dict(size=16, color="#1B1B1B"), height=h, margin=dict(l=20, r=20, t=80, b=50),
+                      font=dict(size=16, color="#1B1B1B"), height=h, margin=dict(l=20, r=20, t=70, b=120),
                       paper_bgcolor="white", plot_bgcolor="#F7FBF8", hoverlabel=dict(font_size=16),
-                      legend=dict(font=dict(size=15), orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
+                      legend=dict(font=dict(size=15), orientation="h", yanchor="top", y=-0.34, xanchor="center", x=0.5))
     fig.update_xaxes(gridcolor="#E3EEE7", tickfont=dict(size=15), title_font=dict(size=16))
     fig.update_yaxes(gridcolor="#E3EEE7", tickfont=dict(size=15), title_font=dict(size=16))
     return fig
@@ -186,7 +186,6 @@ def item_card(x, uid, full=True):
                 f'{pill(str(int(x["score"] * 100)) + "% deviation", "grey")}</div>', unsafe_allow_html=True)
     st.progress(min(max(float(x["score"]), 0.0), 1.0))
     display_reasons = U.translated_reasons(x, lang)
-    display_reasons = U.translated_reasons(x, lang)
     st.markdown(
         '<ul class="why">' +
         "".join(f"<li>{html.escape(r)}</li>" for r in display_reasons) +
@@ -247,16 +246,17 @@ def overview():
         names = [f"Cow #{r['cow']}" for r in rows]
         fig = go.Figure()
         fig.add_trace(go.Bar(x=names, y=[r["health"] for r in rows], name="Health deviation", marker_color="#2563EB",
-                             text=[f"{r['health']}%" for r in rows], textposition="outside", textfont=dict(size=16)))
+                             text=[f"{r['health']}%" for r in rows], textposition="outside", textfont=dict(size=15), cliponaxis=False))
         fig.add_trace(go.Bar(x=names, y=[r["heat"] for r in rows], name="Heat score", marker_color="#E11D8F",
-                             text=[f"{r['heat']}%" for r in rows], textposition="outside", textfont=dict(size=16)))
+                             text=[f"{r['heat']}%" for r in rows], textposition="outside", textfont=dict(size=15), cliponaxis=False))
         for y, txt, col in ((th["watch_from"] * 100, f"Watchlist from {int(th['watch_from'] * 100)}%", "#D97706"), (th["health_alert"] * 100, f"Health alert {int(th['health_alert'] * 100)}%", "#DC2626"),
                             (th["heat_alert"] * 100, f"Heat alert {int(th['heat_alert'] * 100)}%", "#9D174D")):
-            fig.add_hline(y=y, line_dash="dash", line_color=col, line_width=2, annotation_text=txt, annotation_position="top left",
-                          annotation_font=dict(size=14, color=col))
+            fig.add_trace(go.Scatter(x=[names[0], names[-1]], y=[y, y], mode="lines", name=txt, line=dict(color=col, width=2, dash="dash"), hoverinfo="skip"))
         fig.update_layout(barmode="group", bargap=0.35)
-        fig.update_yaxes(range=[0, 100], title="Score (%)")
-        chart(style(fig, "Behaviour change vs each cow's own normal", 440), "ov_scores")
+        fig.update_yaxes(range=[0, 115], title="Score (%)")
+        fig = style(fig, "Behaviour change vs each cow's own normal", 500)
+        fig.update_layout(legend=dict(y=-0.2))
+        chart(fig, "ov_scores")
     with b:
         order = ["alert", "watch", "normal"]
         fig = go.Figure(go.Pie(labels=[U.STATUS_LABEL[o].title() for o in order], values=[counts[o] for o in order], hole=0.62,
@@ -264,7 +264,7 @@ def overview():
                                sort=False, direction="clockwise"))
         fig.update_layout(annotations=[dict(text=f"<b>{len(cows)}</b><br>cows", x=0.5, y=0.5, font=dict(size=24), showarrow=False)],
                           legend=dict(orientation="h", y=-0.05, x=0.5, xanchor="center", font=dict(size=16)))
-        chart(style(fig, "Herd status", 440), "ov_donut")
+        chart(style(fig, "Herd status", 500), "ov_donut")
 
 
 # ====================================================================== PAGE 2: ALERTS & WATCHLIST
@@ -360,7 +360,7 @@ def health_cards():
         st.success("✅ Nothing unusual compared with her own normal.")
 
     # --- chart 1: baseline vs recent
-    fig = make_subplots(rows=1, cols=3, subplot_titles=("Movement (body-lengths / s)", "Lying time (%)", "Feeding time (%)"), horizontal_spacing=0.09)
+    fig = make_subplots(rows=1, cols=3, subplot_titles=("Movement (body-lengths / s)", "Lying time (%)", "Feeding time (%)"), horizontal_spacing=0.12)
     vals = [(b["speed"], r["speed"]), (b["lying_pct"] * 100, r["lying_pct"] * 100), (b["feeding_pct"] * 100, r["feeding_pct"] * 100)]
     for i, (vb, vr) in enumerate(vals, 1):
         fig.add_trace(go.Bar(x=["Her normal"], y=[vb], name="Her normal (baseline)", marker_color="#9DB8A7", showlegend=(i == 1),
@@ -368,8 +368,11 @@ def health_cards():
         fig.add_trace(go.Bar(x=["Now"], y=[vr], name="Now (recent)", marker_color="#0F5132", showlegend=(i == 1),
                              text=[f"{vr:.2f}" if i == 1 else f"{vr:.0f}%"], textposition="outside", textfont=dict(size=16)), row=1, col=i)
     fig.update_layout(bargap=0.3)
-    fig.update_annotations(font_size=17)
-    chart(style(fig, "Her normal vs now", 420), f"c_bar_{cid}")
+    fig.update_annotations(font_size=16)
+    for i, (vb, vr) in enumerate(vals, 1):
+        fig.update_yaxes(range=[0, max(vb, vr, 0.5 if i == 1 else 10) * 1.3], row=1, col=i)
+    fig.update_traces(cliponaxis=False)
+    chart(style(fig, "Her normal vs now", 460), f"c_bar_{cid}")
 
     # --- chart 2: behaviour strip
     tl = c["timeline"]
@@ -379,31 +382,32 @@ def health_cards():
         fig.add_trace(go.Bar(x=[p["t"] + 0.5 for p in pts], y=[1] * len(pts), width=1, name=stt.title(), marker_color=U.STATE_COLORS[stt],
                              hovertemplate=f"{stt.title()}<br>second %{{x:.0f}}<extra></extra>"))
     fig.add_vrect(x0=0, x1=split, fillcolor="#E8F5EE", opacity=0.35, line_width=0, layer="below")
-    fig.add_vline(x=split, line_dash="dash", line_color="#0F3D2A", line_width=2, annotation_text="baseline ends", annotation_font=dict(size=15))
+    fig.add_vline(x=split, line_dash="dash", line_color="#0F3D2A", line_width=2, annotation_text="baseline ends", annotation_position="top right", annotation_font=dict(size=14))
     fig.update_layout(barmode="stack", bargap=0)
     fig.update_yaxes(visible=False, range=[0, 1])
     fig.update_xaxes(title="Seconds into the video")
-    chart(style(fig, "What she did, second by second", 300), f"c_strip_{cid}")
+    fig.update_layout(margin=dict(l=20, r=20, t=70, b=120))
+    chart(style(fig, "What she did, second by second", 340), f"c_strip_{cid}")
 
     # --- chart 3: speed
     fig = go.Figure(go.Scatter(x=[p["t"] for p in tl], y=[p["speed"] for p in tl], mode="lines+markers", name="Movement",
                                line=dict(color="#0F5132", width=3), marker=dict(size=9)))
-    fig.add_hline(y=b["speed"], line_dash="dash", line_color="#6B8F7A", annotation_text="her normal", annotation_font=dict(size=14))
+    fig.add_hline(y=b["speed"], line_dash="dash", line_color="#6B8F7A", annotation_text="her normal", annotation_position="top left", annotation_font=dict(size=14))
     fig.add_hline(y=r["speed"], line_dash="dot", line_color="#DC2626", annotation_text="now (average)", annotation_position="bottom right", annotation_font=dict(size=14))
     fig.add_vline(x=split, line_dash="dash", line_color="#0F3D2A", line_width=1)
     fig.update_xaxes(title="Seconds into the video")
     fig.update_yaxes(title="Movement (body-lengths / s)", rangemode="tozero")
-    chart(style(fig, "Movement over time", 360), f"c_spd_{cid}")
+    chart(style(fig, "Movement over time", 400), f"c_spd_{cid}")
 
     # --- chart 4: where her time went
     sb_, sr_ = U.state_shares(c, split)
     fig = go.Figure()
     for stt in U.STATE_ORDER:
         fig.add_trace(go.Bar(y=["Her normal", "Now"], x=[sb_[stt], sr_[stt]], name=stt.title(), orientation="h", marker_color=U.STATE_COLORS[stt],
-                             text=[f"{sb_[stt]}%" if sb_[stt] else "", f"{sr_[stt]}%" if sr_[stt] else ""], textposition="inside", textfont=dict(size=16, color="white")))
+                             text=[f"{sb_[stt]}%" if sb_[stt] else "", f"{sr_[stt]}%" if sr_[stt] else ""], textposition="inside", textfont=dict(size=15, color="white"), insidetextanchor="middle"))
     fig.update_layout(barmode="stack")
     fig.update_xaxes(title="% of her time", range=[0, 100])
-    chart(style(fig, "Where her time went", 300), f"c_share_{cid}")
+    chart(style(fig, "Where her time went", 360), f"c_share_{cid}")
 
 
 # ====================================================================== PAGE 4: HERD MAP
@@ -431,10 +435,10 @@ def herd_map():
                                                                   marker=dict(size=16, color=U.STATUS_COLORS[k])) for k in ("alert", "watch", "normal")],
                     frames=[go.Frame(data=[frame_trace(t)], traces=[0], name=str(t)) for t in times])
     fig.update_layout(
-        updatemenus=[dict(type="buttons", showactive=False, x=0, y=-0.09, xanchor="left", yanchor="top", pad=dict(t=10), buttons=[
+        updatemenus=[dict(type="buttons", showactive=False, x=0, y=-0.16, xanchor="left", yanchor="top", pad=dict(t=10), buttons=[
             dict(label="▶ Play", method="animate", args=[None, dict(frame=dict(duration=800, redraw=True), fromcurrent=True, transition=dict(duration=300))]),
             dict(label="⏸ Pause", method="animate", args=[[None], dict(frame=dict(duration=0, redraw=False), mode="immediate", transition=dict(duration=0))])])],
-        sliders=[dict(active=0, x=0.2, len=0.8, y=-0.09, yanchor="top", currentvalue=dict(prefix="Time: ", suffix=" s", font=dict(size=18)),
+        sliders=[dict(active=0, x=0.2, len=0.8, y=-0.16, yanchor="top", currentvalue=dict(prefix="Time: ", suffix=" s", font=dict(size=18)),
                       steps=[dict(method="animate", label=str(t), args=[[str(t)], dict(mode="immediate", frame=dict(duration=0, redraw=True), transition=dict(duration=0))]) for t in times])])
     fig.update_xaxes(range=[0, 1], showticklabels=False, title="Left of the camera view  →  right")
     fig.update_yaxes(range=[0, 1], showticklabels=False, title="Bottom  →  top of the view")
@@ -445,8 +449,9 @@ def herd_map():
                                            sizing="stretch", opacity=0.6, layer="below")])
         else:
             st.caption("Camera view not available for this video.")
-    style(fig, "Where each cow is", 680)
-    fig.update_layout(margin=dict(l=20, r=20, t=80, b=140))
+    style(fig, "Where each cow is", 720)
+    fig.update_layout(margin=dict(l=20, r=20, t=110, b=200), legend=dict(y=1.04, yanchor="bottom", x=1, xanchor="right"))
+    fig.update_xaxes(title_standoff=10)
     chart(fig, "map_anim")
 
     pal = ["#0F5132", "#2563EB", "#E11D8F", "#D97706", "#7C3AED", "#0891B2", "#65A30D", "#B91C1C"]
@@ -455,13 +460,13 @@ def herd_map():
         col = pal[n % len(pal)]
         xs, ys = [p["x"] for p in c["timeline"]], [1 - p["y"] for p in c["timeline"]]
         fig.add_trace(go.Scatter(x=xs, y=ys, mode="lines+markers", name=f"Cow #{c['id']}", line=dict(color=col, width=3), marker=dict(size=7, color=col)))
-        fig.add_trace(go.Scatter(x=xs[:1], y=ys[:1], mode="markers+text", text=["start"], textposition="bottom center", showlegend=False,
+        fig.add_trace(go.Scatter(x=xs[:1], y=ys[:1], mode="markers", showlegend=False, hoverinfo="skip",
                                  marker=dict(size=18, color=col, symbol="circle", line=dict(width=2, color="white"))))
-        fig.add_trace(go.Scatter(x=xs[-1:], y=ys[-1:], mode="markers+text", text=["end"], textposition="top center", showlegend=False,
+        fig.add_trace(go.Scatter(x=xs[-1:], y=ys[-1:], mode="markers", showlegend=False, hoverinfo="skip",
                                  marker=dict(size=18, color=col, symbol="diamond", line=dict(width=2, color="white"))))
     fig.update_xaxes(range=[0, 1], showticklabels=False, title="Left of the camera view  →  right")
     fig.update_yaxes(range=[0, 1], showticklabels=False, title="Bottom  →  top of the view")
-    chart(style(fig, "Movement trails (○ start, ◇ end)", 480), "map_trails")
+    chart(style(fig, "Movement trails (○ start, ◇ end)", 560), "map_trails")
 
 
 # ====================================================================== PAGE 5: CCTV & EVIDENCE
@@ -496,11 +501,23 @@ def analyze():
     st.markdown('<div class="hero"><h1>📤 Upload & Analyze</h1><p>Upload cattle CCTV footage and run the existing YOLO + ByteTrack + behaviour pipeline.</p></div>', unsafe_allow_html=True)
     st.markdown('<div class="flow">' + '<span class="a">→</span>'.join(f'<span class="n">{t}</span>' for t in (
         "Video", "YOLO", "ByteTrack", "Behaviour", "Own baseline", "Watchlist / alerts", "Evidence", "Gemini", "Voice")) + "</div>", unsafe_allow_html=True)
+    st.markdown('<div class="sec">Option 1 · Load results processed in Colab (fast, free, no load on this app)</div>', unsafe_allow_html=True)
+    st.caption("Run colab/gaudrishti_colab.ipynb in Google Colab on any video, download output.zip, and drop it here.")
+    zup = st.file_uploader("Colab output.zip", type=["zip"], key="zipup")
+    if zup is not None:
+        try:
+            zres, zfolder = U.load_zip_results(zup.getvalue())
+            st.session_state["analysis"] = (zres, zfolder)
+            st.session_state["_goto_mine"] = True
+            st.rerun()
+        except ValueError as e:
+            st.error(f"Could not read this zip: {e}")
     live_ok = U.engine_available()
     if not live_ok:
-        st.warning("The live AI engine (YOLO) is not installed in this deployment, so video processing is off here. "
-                   "Run the app on your laptop (`pip install -r requirements-local.txt`) or process in Colab and use 'Load Colab results'.")
+        st.info("Live YOLO processing is switched off on this hosted app to keep it fast and avoid CPU limits. "
+                "Use Colab (above) for new videos. The Demo herd and verified live results work instantly.")
         return
+    st.markdown('<div class="sec">Option 2 · Process here (laptop installs only)</div>', unsafe_allow_html=True)
     up = st.file_uploader("Cattle CCTV / farm video (MP4, MOV, AVI, MKV)", type=["mp4", "mov", "avi", "mkv"], key="vidup")
     if not up:
         st.info("Upload a 20 to 60 second clip with clearly visible cows (a side or high angle works best).")
@@ -514,7 +531,7 @@ def analyze():
         n_cows = st.number_input("How many cows can you see?", 1, 50, 2, key="n_cows")
         feed_on = st.checkbox("Mark the feed area", value=True, key="feed_on")
         fy = st.slider("Feed area, top to bottom (% of height)", 0, 100, (75, 100), disabled=not feed_on, key="feed_y")
-        secs = st.slider("Analyse the first N seconds", 5, 180, int(min(max(info["duration"], 5), 60)), key="secs")
+        secs = st.slider("Analyse the first N seconds", 5, 30, int(min(max(info["duration"], 5), 20)), key="secs")
         conf = st.slider("Detection sensitivity (lower finds more cows)", 0.05, 0.7, 0.10, 0.05, key="conf")
         model = st.selectbox("Model", ["yolov8n.pt", "yolov8s.pt"], help="n = fast, s = more accurate", key="model")
         start = st.time_input("Video start time (clock)", dt.time(6, 0), key="vstart")
