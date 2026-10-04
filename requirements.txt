@@ -10,3 +10,5 @@ imageio-ffmpeg
 ultralytics
 torch
 torchvision
+lap>=0.5.12
+
