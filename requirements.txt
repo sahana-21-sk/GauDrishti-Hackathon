@@ -6,9 +6,4 @@ google-genai
 gTTS
 python-dotenv
 opencv-python-headless
-imageio-ffmpeg
-ultralytics
-torch
-torchvision
-lap>=0.5.12
 
