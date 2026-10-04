@@ -1,2 +1,6 @@
 -r requirements.txt
 ultralytics
+torch
+torchvision
+lap>=0.5.12
+imageio-ffmpeg
