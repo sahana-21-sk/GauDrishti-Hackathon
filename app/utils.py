@@ -284,11 +284,12 @@ def speak(text, lang, item_id, allow_pregen):
 # It has no video_info(), no progress callback, no stride and no threshold arguments. So the app provides those
 # helpers itself and calls process() exactly as the Colab notebook does.
 def engine_available():
-    """True if YOLO + OpenCV are installed in this deployment (they are on a laptop / Colab, not on free hosting)."""
     try:
-        import cv2, ultralytics  # noqa: F401
+        import cv2
+        import ultralytics
         return True
-    except Exception:
+    except Exception as e:
+        st.error(f"YOLO import failed: {e}")
         return False
 
 
