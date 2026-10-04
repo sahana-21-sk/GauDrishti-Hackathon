@@ -349,10 +349,9 @@ def speak(text, lang, item_id, allow_pregen):
 def engine_available():
     try:
         import cv2
-        import ultralytics
-        return True
-    except Exception as e:
-        st.error(f"YOLO import failed: {e}")
+        import importlib.util
+        return importlib.util.find_spec("ultralytics") is not None
+    except Exception:
         return False
 
 
@@ -391,6 +390,11 @@ def run_pipeline(video, out_dir, model, conf, feed_zone, start_clock):
     """Calls the FROZEN pipeline exactly like the Colab notebook does. Returns its results dict."""
     if str(COLAB) not in sys.path:
         sys.path.insert(0, str(COLAB))
+    try:
+        import torch
+        torch.set_num_threads(2)   # keep the laptop responsive
+    except Exception:
+        pass
     from process_video import process
     return process(str(video), str(out_dir), model, conf, feed_zone, start_clock)
 
