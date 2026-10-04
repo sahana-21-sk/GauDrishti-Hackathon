@@ -1,4 +1,4 @@
-streamlit>=1.50
+streamlit
 pandas
 numpy
 plotly
@@ -7,3 +7,6 @@ gTTS
 python-dotenv
 opencv-python-headless
 imageio-ffmpeg
+ultralytics
+torch
+torchvision
